@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
   schedule:
     - cron: '0 10 * * *' # Once per day at 10am UTC
 
@@ -26,7 +23,7 @@ jobs:
         with:
           java-version: ${{ matrix.jdk }}
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: echo Starting build
   snapshot_tests:
     name: Test against snapshots
     runs-on: ubuntu-latest
@@ -51,7 +48,6 @@ jobs:
         run: echo Running Sonarqube static code analysis
   artifacts:
     name: Deploy Artifacts
-    if: github.event_name != 'pull_request'
     needs: [build, snapshot_tests, sonar]
     runs-on: ubuntu-latest
     steps:
@@ -64,7 +60,6 @@ jobs:
         run: echo Deploying Artifacts
   docs:
     name: Deploy Docs
-    if: github.event_name != 'pull_request'
     needs: [build, snapshot_tests, sonar]
     runs-on: ubuntu-latest
     steps:
@@ -77,7 +72,6 @@ jobs:
         run: echo Deploying Docs
   schema:
     name: Deploy Schema
-    if: github.event_name != 'pull_request'
     needs: [build, snapshot_tests, sonar]
     runs-on: ubuntu-latest
     steps:
